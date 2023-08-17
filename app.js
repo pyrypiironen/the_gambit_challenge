@@ -11,15 +11,31 @@ app.get('/', async (req, res) => {
 
 	try {
 		const response = await axios.get('http://tuftuf.gambitlabs.fi/feed.txt')
-		const dataArray = response.data.split("\n");
+		
+		dataArray = buildArray(response);
 		responseObject = buildResponse(dataArray)
-		res.status(777).json(responseObject)
+		
+		res.status(200).json(responseObject)
 	} catch(error) {
-		res.status(777).json({
+		res.status(400).json({
 			error: 'Error fetching data'
 		})
 	}
 });
+
+let buildArray = (response) => {
+	const lines = response.data.split("\n");
+	const dataArray = [];
+	 	// Index 0 for the date
+		dataArray[0] = lines[0];
+		// Save the value to index given before that.
+		for (let i = 1; i < lines.length; i++) {
+			const parts = lines[i].split(':')
+			dataArray[parts[0]] = parts[1];
+		}
+		return dataArray;
+	}
+
 
 let buildResponse = (dataArray) => {
 	const responseObject = {
@@ -34,7 +50,7 @@ let buildResponse = (dataArray) => {
 		'Negative decimal fractation' : 99999999,
 		'Positive energy accumulatro' : 99999999,
 		'Positive energy decimal fractation' : 99999999,
-
+		// 21-22 (Should be -56)
 		'Negative energy accumulator' : 99999999,
 
 		'Negative energy decimal fractation' : 99999999,
@@ -75,25 +91,32 @@ let buildResponse = (dataArray) => {
 		'Downstream strength' : 99999999,
 		'Language used in user interface' : 99999999,
 		'The rate of the measurement travel time by the calculated travel time' : 99999999,
-		'Reynolds number' : 99999999
+		'Reynolds number' : 99999999,
+		'**** Data array***' : dataArray
 	}
 	return responseObject
 }
 
+//let convertLong
 
-// req = original data
-// res = json to send back
-// '/' -> add app?
+
+
+
+
+
+
+
+
+
+
 
 app.listen(PORT, () => {
   console.log('Server is running on port 3000');
 });
 
 
-
 // http://tuftuf.gambitlabs.fi/feed.txt
 
-// Check status codes
 
 // Next:
 // 1.	Write buildResponse function.
