@@ -14,6 +14,9 @@ app.get('/', async (req, res) => {
 		// Just for testing program with 2017 data
 		dataArray[21] = 65480;
 		dataArray[22] = 65535;
+		dataArray[33] = 15568;
+		dataArray[34] = 16611;
+		dataArray[92] = 806;
 		// Testing part ends
 		responseObject = buildResponse(dataArray)
 		res.status(200).json(responseObject)
@@ -46,20 +49,19 @@ let buildResponse = (dataArray) => {
 		'Energy Flow Rate' : 99999999,
 		'Velocity' : 99999999,
 		'Fluit sound speed' : 99999999,
-		'Positive accumulator' : 99999999,
+		'Positive accumulator' : convertLong(dataArray[9], dataArray[10]),
 		'Positive decimal fractation' : 99999999,
-		'Negative accumulator' : 99999999,
+		'Negative accumulator' : convertLong(dataArray[13], dataArray[14]),
 		'Negative decimal fractation' : 99999999,
-		'Positive energy accumulatro' : 99999999,
+		'Positive energy accumulator' : convertLong(dataArray[17], dataArray[18]),
 		'Positive energy decimal fractation' : 99999999,
-		
-		// 21-22 (Should be -56 when testing with 2017 data)
+
 		'Negative energy accumulator' : convertLong(dataArray[21], dataArray[22]),
 
 		'Negative energy decimal fractation' : 99999999,
-		'Net accumulator' : 99999999,
+		'Net accumulator' : convertLong(dataArray[25], dataArray[26]),
 		'Net decimal fractation' : 99999999,
-		'Net energy accumulator' : 99999999,
+		'Net energy accumulator' : convertLong(dataArray[29], dataArray[30]),
 		'Net energy decimal fractation' : 99999999,
 
 		'Temperature #1/inlet' : 99999999,
