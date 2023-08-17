@@ -11,6 +11,10 @@ app.get('/', async (req, res) => {
 	try {
 		const response = await axios.get('http://tuftuf.gambitlabs.fi/feed.txt')
 		dataArray = buildArray(response);
+		// Just for testing program with 2017 data
+		dataArray[21] = 65480;
+		dataArray[22] = 65535;
+		// Testing part ends
 		responseObject = buildResponse(dataArray)
 		res.status(200).json(responseObject)
 	} catch(error) {
@@ -49,7 +53,7 @@ let buildResponse = (dataArray) => {
 		'Positive energy accumulatro' : 99999999,
 		'Positive energy decimal fractation' : 99999999,
 		
-		// 21-22 (Should be -56)
+		// 21-22 (Should be -56 when testing with 2017 data)
 		'Negative energy accumulator' : convertLong(dataArray[21], dataArray[22]),
 
 		'Negative energy decimal fractation' : 99999999,
@@ -98,20 +102,9 @@ let buildResponse = (dataArray) => {
 }
 // Combine two 16-bit values into a single 32-bit value.
 let convertLong = (reg1, reg2) => {
-	// Convert registry values to int and swap their order.
-	let num1 = parseInt(reg2);
-	let num2 = parseInt(reg1);
-	// Modified to 16 bits long binary. Radix 2 is for binary.
-	// 16 is minimum length and '0' is for zero padding.
-	num1 = num1.toString(2).padStart(16, '0');
-	num2 = num2.toString(2).padStart(16, '0');
-	// Connect the binarys.
-	let binary = num1 + num2;
-	// Parse the the binary into int.
-	value = parseInt(binary, 2);
-	return num2;
+	let binary = (reg2 << 16) | reg1;
+	return binary;
 }
-
 
 
 
