@@ -5,7 +5,6 @@ const axios = require('axios');
 
 
 
-
 const PORT = process.env.PORT || 3000;
 
 app.get('/', async (req, res) => {
@@ -13,7 +12,6 @@ app.get('/', async (req, res) => {
 	try {
 		const response = await axios.get('http://tuftuf.gambitlabs.fi/feed.txt')
 		const dataArray = response.data.split("\n");
-		// function to modified data to human readable values
 		responseObject = buildResponse(dataArray)
 		res.status(777).json(responseObject)
 	} catch(error) {
@@ -23,6 +21,66 @@ app.get('/', async (req, res) => {
 	}
 });
 
+let buildResponse = (dataArray) => {
+	const responseObject = {
+		// Date
+		'Flowrate' : 99999999,
+		'Energy Flow Rate' : 99999999,
+		'Velocity' : 99999999,
+		'Fluit sound speed' : 99999999,
+		'Positive accumulator' : 99999999,
+		'Positive decimal fractation' : 99999999,
+		'Negative accumulator' : 99999999,
+		'Negative decimal fractation' : 99999999,
+		'Positive energy accumulatro' : 99999999,
+		'Positive energy decimal fractation' : 99999999,
+
+		'Negative energy accumulator' : 99999999,
+
+		'Negative energy decimal fractation' : 99999999,
+		'Net accumulator' : 99999999,
+		'Net decimal fractation' : 99999999,
+		'Net energy accumulator' : 99999999,
+		'Net energy decimal fractation' : 99999999,
+
+		'Temperature #1/inlet' : 99999999,
+
+		'Temperature #2/inlet' : 99999999,
+		'Analog input AI3' : 99999999,
+		'Analog input AI4' : 99999999,
+		'Analog input AI5' : 99999999,
+		'Current input at AI3' : 99999999,
+		'Current input at AI3' : 99999999,
+		'Current input at AI3' : 99999999,
+		'System password' : 99999999,
+		'Password for hardware' : 99999999,
+		'Calendar (date and time)' : 99999999,
+		'Day+Hour for Auto-Save' : 99999999,
+		'Key to input' : 99999999,
+		'Go to Window' : 99999999,
+		'LCD Back-lit lights for number of seconds' : 99999999,
+		'Times for beeper' : 99999999,
+		'Pulse left for OCT' : 99999999,
+		'Error code' : 99999999,
+		'PT100 resistance of inlet' : 99999999,
+		'PT100 resistanve of outlet' : 99999999,
+		'Total travel time' : 99999999,
+		'Delta travel time' : 99999999,
+		'Upstream travel time' : 99999999,
+		'Downstream travel time' : 99999999,
+		'Output current' : 99999999,
+		'Working step' : 99999999,
+		'Signal Quality' : 99999999,
+		'Upstream strength' : 99999999,
+		'Downstream strength' : 99999999,
+		'Language used in user interface' : 99999999,
+		'The rate of the measurement travel time by the calculated travel time' : 99999999,
+		'Reynolds number' : 99999999
+	}
+	return responseObject
+}
+
+
 // req = original data
 // res = json to send back
 // '/' -> add app?
@@ -31,14 +89,6 @@ app.listen(PORT, () => {
   console.log('Server is running on port 3000');
 });
 
-let buildResponse = (dataArray) => {
-	const responseObject = {
-		data1: '42',
-		data2: 'Hive',
-		data3: dataArray[2]
-	}
-	return responseObject
-}
 
 
 // http://tuftuf.gambitlabs.fi/feed.txt
