@@ -1,20 +1,17 @@
+// Importing modules
 const express = require('express');
 const app = express();
-
 const axios = require('axios');
 
-
-
+// Setting up the port. Local port 3000 for now.
 const PORT = process.env.PORT || 3000;
 
+//The application
 app.get('/', async (req, res) => {
-
 	try {
 		const response = await axios.get('http://tuftuf.gambitlabs.fi/feed.txt')
-		
 		dataArray = buildArray(response);
 		responseObject = buildResponse(dataArray)
-		
 		res.status(200).json(responseObject)
 	} catch(error) {
 		res.status(400).json({
@@ -23,6 +20,7 @@ app.get('/', async (req, res) => {
 	}
 });
 
+// Build the data array for later use.
 let buildArray = (response) => {
 	const lines = response.data.split("\n");
 	const dataArray = [];
@@ -36,7 +34,7 @@ let buildArray = (response) => {
 		return dataArray;
 	}
 
-
+// Build the response for later use.
 let buildResponse = (dataArray) => {
 	const responseObject = {
 		// Date
@@ -50,8 +48,9 @@ let buildResponse = (dataArray) => {
 		'Negative decimal fractation' : 99999999,
 		'Positive energy accumulatro' : 99999999,
 		'Positive energy decimal fractation' : 99999999,
+		
 		// 21-22 (Should be -56)
-		'Negative energy accumulator' : 99999999,
+		'Negative energy accumulator' : convertLong(dataArray[21], dataArray[22]),
 
 		'Negative energy decimal fractation' : 99999999,
 		'Net accumulator' : 99999999,
@@ -66,8 +65,9 @@ let buildResponse = (dataArray) => {
 		'Analog input AI4' : 99999999,
 		'Analog input AI5' : 99999999,
 		'Current input at AI3' : 99999999,
-		'Current input at AI3' : 99999999,
-		'Current input at AI3' : 99999999,
+		// Duplicates may result unexpected behavior.
+		//'Current input at AI3' : 99999999,
+		//'Current input at AI3' : 99999999,
 		'System password' : 99999999,
 		'Password for hardware' : 99999999,
 		'Calendar (date and time)' : 99999999,
@@ -96,9 +96,21 @@ let buildResponse = (dataArray) => {
 	}
 	return responseObject
 }
-
-//let convertLong
-
+// Combine two 16-bit values into a single 32-bit value.
+let convertLong = (reg1, reg2) => {
+	// Convert registry values to int and swap their order.
+	let num1 = parseInt(reg2);
+	let num2 = parseInt(reg1);
+	// Modified to 16 bits long binary. Radix 2 is for binary.
+	// 16 is minimum length and '0' is for zero padding.
+	num1 = num1.toString(2).padStart(16, '0');
+	num2 = num2.toString(2).padStart(16, '0');
+	// Connect the binarys.
+	let binary = num1 + num2;
+	// Parse the the binary into int.
+	value = parseInt(binary, 2);
+	return num2;
+}
 
 
 
@@ -128,9 +140,10 @@ app.listen(PORT, () => {
 
 // LONG 32 bits (this should be -56)
 // Decimal to binary (65480 and 65535)
-// First reg					1111 1111 1100 1000
+// First reg					1111 1111 1100 1000 (2017 text file)
 // Second reg					1111 1111 1111 1111
-// Combined (2nd + 1st)			1111 1111 1111 1111 1111 1111 1100 1000
+// Combined (2nd + 1st)			1111 1111 1111 1111 1111 1111 1100 1000 (2017 text file)
+// convertLong for now			1111 1111 1111 1111 1111 1011 1011 0000 (2018 text file)
 //	-->							-56 (decimal from signed 2's complement)
 
 // REAL4 (this should be 7.101173400878906)
