@@ -38,7 +38,7 @@ let buildArray = (response) => {
 			const parts = lines[i].split(':')
 			dataArray[parts[0]] = parts[1];
 		}
-		return dataArray;
+		return dataArray
 	}
 
 // Build the response for later use.
@@ -92,7 +92,7 @@ let	buildResponse = (dataArray) => {
 		'Output current' : convertFloat(dataArray[89], dataArray[90]) + ' mA',
 
 		'Working step' : 99999999,
-		'Signal Quality' : 99999999,
+		'Signal Quality' : convertInt(dataArray[92]),
 		'Upstream strength' : 99999999,
 		'Downstream strength' : 99999999,
 		'Language used in user interface' : 99999999,
@@ -106,7 +106,7 @@ let	buildResponse = (dataArray) => {
 // Combine two 16-bit values into a single 32-bit value.
 let	convertLong = (reg1, reg2) => {
 	let value = (reg2 << 16) | reg1;
-	return value;
+	return value
 }
 
 let	convertFloat = (reg1, reg2) => {
@@ -117,11 +117,15 @@ let	convertFloat = (reg1, reg2) => {
 	dataView.setUint32(0, value, false);
 	// Use dataview object to get float value.
 	const floatValue = dataView.getFloat32(0, false);
-
-	return floatValue;
+	return floatValue
 }
 	
+let convertInt = (reg) => {
+	let value = reg & 255
 
+
+	return value
+}
 
 
 
