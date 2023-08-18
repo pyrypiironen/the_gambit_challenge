@@ -42,7 +42,7 @@ let buildArray = (response) => {
 	}
 
 // Build the response for later use.
-let buildResponse = (dataArray) => {
+let	buildResponse = (dataArray) => {
 	const responseObject = {
 		// Date
 		'Flowrate' : 99999999,
@@ -55,16 +55,14 @@ let buildResponse = (dataArray) => {
 		'Negative decimal fractation' : 99999999,
 		'Positive energy accumulator' : convertLong(dataArray[17], dataArray[18]),
 		'Positive energy decimal fractation' : 99999999,
-
 		'Negative energy accumulator' : convertLong(dataArray[21], dataArray[22]),
-
 		'Negative energy decimal fractation' : 99999999,
 		'Net accumulator' : convertLong(dataArray[25], dataArray[26]),
 		'Net decimal fractation' : 99999999,
 		'Net energy accumulator' : convertLong(dataArray[29], dataArray[30]),
 		'Net energy decimal fractation' : 99999999,
-
-		'Temperature #1/inlet' : 99999999,
+		// Float. Should be 7.101173400878906 in 2017 data.
+		'Temperature #1/inlet' : convertFloat(dataArray[33], dataArray[34]) + ' C',
 
 		'Temperature #2/inlet' : 99999999,
 		'Analog input AI3' : 99999999,
@@ -102,15 +100,25 @@ let buildResponse = (dataArray) => {
 	}
 	return responseObject
 }
+
 // Combine two 16-bit values into a single 32-bit value.
-let convertLong = (reg1, reg2) => {
-	let binary = (reg2 << 16) | reg1;
-	return binary;
+let	convertLong = (reg1, reg2) => {
+	let value = (reg2 << 16) | reg1;
+	return value;
 }
 
+let	convertFloat = (reg1, reg2) => {
+	let value = (reg2 << 16) | reg1;
+	// Build dataview object for later use.
+	const buffer = new ArrayBuffer(4);
+	const dataView = new DataView(buffer);
+	dataView.setUint32(0, value, false);
+	// Use dataview object to get float value.
+	const floatValue = dataView.getFloat32(0, false);
 
-
-
+	return floatValue;
+}
+	
 
 
 
