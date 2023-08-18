@@ -16,6 +16,7 @@ app.get('/', async (req, res) => {
 		dataArray[22] = 65535;
 		dataArray[33] = 15568;
 		dataArray[34] = 16611;
+		dataArray[51] = 20690; // password
 		dataArray[92] = 806;
 		// Testing part ends
 		responseObject = buildResponse(dataArray)
@@ -72,16 +73,20 @@ let	buildResponse = (dataArray) => {
 		'Current input at AI3 (c)' : convertFloat(dataArray[47], dataArray[48]) + ' mA',
 		//All good so far
 		
-		'System password' : 99999999,
-		'Password for hardware' : 99999999,
+		// BCD
+		'System password' : convertBCD_2(dataArray[49], dataArray[50]),
+		'Password for hardware' : convertBCD(dataArray[51]),
 		'Calendar (date and time)' : 99999999,
-		'Day+Hour for Auto-Save' : 99999999,
+		'Day+Hour for Auto-Save' : convertBCD(dataArray[56]) + 'H',
+		
+		
 		'Key to input' : 99999999,
 		'Go to Window' : 99999999,
 		'LCD Back-lit lights for number of seconds' : 99999999,
 		'Times for beeper' : 99999999,
 		'Pulse left for OCT' : 99999999,
-		'Error code' : 99999999,
+		// No need to protection.
+		'Error code' : parseInt(dataArray[72]),
 
 		'PT100 resistance of inlet' : convertFloat(dataArray[77], dataArray[78]) + ' Ohm',
 		'PT100 resistanve of outlet' : convertFloat(dataArray[79], dataArray[80]) + ' Ohm',
@@ -95,7 +100,8 @@ let	buildResponse = (dataArray) => {
 		'Signal Quality' : convertInt(dataArray[92]),
 		'Upstream strength' : convertLimitedInt(dataArray[93]),
 		'Downstream strength' : convertLimitedInt(dataArray[94]),
-		'Language used in user interface' : 99999999,
+		// Not protected to keep possible add languages.
+		'Language used in user interface' : parseInt(dataArray[96]),
 
 		'The rate of the measurement travel time by the calculated travel time' : convertFloat(dataArray[97], dataArray[98]),
 		'Reynolds number' : convertFloat(dataArray[99], dataArray[100]),
@@ -125,7 +131,7 @@ let convertInt = (reg) => {
 	// Protected against values which is not in the range (0-99).
 	// Protection against negative values is handled by masking with 255.
 	if (value > 99)
-		return 'Invalid value'
+		return 'Invalid value. Value is out of range (0-99).'
 	return value
 }
 
@@ -134,6 +140,51 @@ let convertLimitedInt = (reg) => {
 	let value = reg & 2047
 	return value
 }
+
+
+// Masks
+	// 61 440		1111 0000 0000 0000
+	// 3 840		0000 1111 0000 0000
+	// 240			0000 0000 1111 0000
+	// 15			0000 0000 0000 1111
+
+let convertBCD = (reg) => {
+	let value1 = (reg & 61440) >> 12;
+	let value2 = (reg & 3840) >> 8;
+	let value3 = (reg & 240) >> 4;
+	let value4 = (reg & 15);
+	const valueStr =	String(value1).padStart(2, '0') +
+						String(value2).padStart(2, '0') +
+						String(value3).padStart(2, '0') +
+						String(value4).padStart(2, '0');
+	return valueStr
+}
+
+
+let convertBCD_2 = (reg1, reg2) => {
+	return convertBCD(reg2) + convertBCD(reg1)
+}
+
+let convertBCDcal = (reg1, reg2, reg3) => {
+	let value1 = (reg3 & 61440) >> 12;
+	let value2 = (reg3 & 3840) >> 8;
+	let value3 = (reg3 & 240) >> 4;
+	let value4 = (reg3 & 15);
+	let value5 = (reg2 & 61440) >> 12;
+	let value6 = (reg2 & 3840) >> 8;
+	let value7 = (reg2 & 240) >> 4;
+	let value8 = (reg2 & 15);
+	let value9 = (reg1 & 61440) >> 12;
+	let value10 = (reg2 & 3840) >> 8;
+	let value11 = (reg3 & 240) >> 4;
+	let value12 = (reg4 & 15);
+	const calendar =	String(value1).padStart(2, '0') +
+						String(value2).padStart(2, '0') +
+						String(value3).padStart(2, '0') +
+						String(value4).padStart(2, '0');
+
+}
+
 
 
 
