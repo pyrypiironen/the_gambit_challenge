@@ -16,7 +16,6 @@ app.get('/', async (req, res) => {
 		dataArray[22] = 65535;
 		dataArray[33] = 15568;
 		dataArray[34] = 16611;
-		dataArray[51] = 20690; // password
 		dataArray[92] = 806;
 		// Testing part ends
 		responseObject = buildResponse(dataArray)
@@ -76,7 +75,7 @@ let	buildResponse = (dataArray) => {
 		// BCD
 		'System password' : convertBCD_2(dataArray[49], dataArray[50]),
 		'Password for hardware' : convertBCD(dataArray[51]),
-		'Calendar (date and time)' : 99999999,
+		'Calendar (date and time)' : convertBCDcal(dataArray[53], dataArray[54], dataArray[55]),
 		'Day+Hour for Auto-Save' : convertBCD(dataArray[56]) + 'H',
 		
 		
@@ -153,10 +152,11 @@ let convertBCD = (reg) => {
 	let value2 = (reg & 3840) >> 8;
 	let value3 = (reg & 240) >> 4;
 	let value4 = (reg & 15);
-	const valueStr =	String(value1).padStart(2, '0') +
-						String(value2).padStart(2, '0') +
-						String(value3).padStart(2, '0') +
-						String(value4).padStart(2, '0');
+	// Need protection against decimals ovet 9?
+	const valueStr =	String(value1) +
+						String(value2) +
+						String(value3) +
+						String(value4);
 	return valueStr
 }
 
@@ -175,14 +175,28 @@ let convertBCDcal = (reg1, reg2, reg3) => {
 	let value7 = (reg2 & 240) >> 4;
 	let value8 = (reg2 & 15);
 	let value9 = (reg1 & 61440) >> 12;
-	let value10 = (reg2 & 3840) >> 8;
-	let value11 = (reg3 & 240) >> 4;
-	let value12 = (reg4 & 15);
-	const calendar =	String(value1).padStart(2, '0') +
-						String(value2).padStart(2, '0') +
-						String(value3).padStart(2, '0') +
-						String(value4).padStart(2, '0');
-
+	let value10 = (reg1 & 3840) >> 8;
+	let value11 = (reg1 & 240) >> 4;
+	let value12 = (reg1 & 15);
+	const calendar =	String(value1) +
+						String(value2) +
+						's' +
+						String(value3) +
+						String(value4) +
+						'm' +
+						String(value5) +
+						String(value6) +
+						'h' +
+						String(value7) +
+						String(value8) +
+						'd' +
+						String(value9) +
+						String(value10) +
+						'm' +
+						String(value11) +
+						String(value12) +
+						'y';
+	return calendar
 }
 
 
