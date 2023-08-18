@@ -83,7 +83,6 @@ let	buildResponse = (dataArray) => {
 		'Pulse left for OCT' : 99999999,
 		
 		
-		// No need to protection.
 		'Error code' : parseInt(dataArray[72]),
 		'PT100 resistance of inlet' : convertFloat(dataArray[77], dataArray[78]) + ' Ohm',
 		'PT100 resistanve of outlet' : convertFloat(dataArray[79], dataArray[80]) + ' Ohm',
@@ -99,25 +98,22 @@ let	buildResponse = (dataArray) => {
 		'Upstream strength' : convertLimitedInt(dataArray[93]),
 		'Downstream strength' : convertLimitedInt(dataArray[94]),
 		// Not protected to keep possible add languages.
-		'Language used in user interface' : parseInt(dataArray[96]),
+		'Language used in user interface' : setLanguage(dataArray[96]),
 		'The rate of the measurement travel time by the calculated travel time' : convertFloat(dataArray[97], dataArray[98]),
 		'Reynolds number' : convertFloat(dataArray[99], dataArray[100]),
 	}
 	return responseObject
 }
 
-// Combine two 16-bit values into a single 32-bit value. Swap.
 let	convertLong = (reg1, reg2) => {
 	return (reg2 << 16) | reg1
 }
 
 let	convertFloat = (reg1, reg2) => {
 	let value = (reg2 << 16) | reg1;
-	// Build dataview object for later use.
 	const buffer = new ArrayBuffer(4);
 	const dataView = new DataView(buffer);
 	dataView.setUint32(0, value, false);
-	// Use dataview object to get float value.
 	const floatValue = dataView.getFloat32(0, false);
 	return floatValue
 }
@@ -137,25 +133,18 @@ let convertLimitedInt = (reg) => {
 }
 
 
-// Masks
-	// 61 440		1111 0000 0000 0000
-	// 3 840		0000 1111 0000 0000
-	// 240			0000 0000 1111 0000
-	// 15			0000 0000 0000 1111
 
 let convertBCD = (reg) => {
 	let value1 = (reg & 61440) >> 12;
 	let value2 = (reg & 3840) >> 8;
 	let value3 = (reg & 240) >> 4;
 	let value4 = (reg & 15);
-	// Need protection against decimals ovet 9?
 	const valueStr =	String(value1) +
 						String(value2) +
 						String(value3) +
 						String(value4);
 	return valueStr
 }
-
 
 let convertBCD_2 = (reg1, reg2) => {
 	return convertBCD(reg2) + convertBCD(reg1)
@@ -192,9 +181,15 @@ let convertBCDcal = (reg1, reg2, reg3) => {
 						':' +
 						String(value11) +
 						String(value12);
-	
-	
 	return calendar
+}
+
+let setLanguage = (reg) => {
+	if (reg == 0)
+		return 'English'
+	if (reg == 1)
+		return 'Chinese'
+	return 'The language is not recognized.'
 }
 
 
@@ -208,13 +203,6 @@ app.listen(PORT, () => {
   console.log('Server is running on port 3000');
 });
 
-
-// http://tuftuf.gambitlabs.fi/feed.txt
-
-
-// Next:
-// 1.	Write buildResponse function.
-// 2.	Write helper function to modified data to human readable form.
 
 
 
