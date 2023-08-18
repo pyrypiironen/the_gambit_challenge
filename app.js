@@ -93,8 +93,8 @@ let	buildResponse = (dataArray) => {
 
 		'Working step' : 99999999,
 		'Signal Quality' : convertInt(dataArray[92]),
-		'Upstream strength' : 99999999,
-		'Downstream strength' : 99999999,
+		'Upstream strength' : convertLimitedInt(dataArray[93]),
+		'Downstream strength' : convertLimitedInt(dataArray[94]),
 		'Language used in user interface' : 99999999,
 
 		'The rate of the measurement travel time by the calculated travel time' : convertFloat(dataArray[97], dataArray[98]),
@@ -119,13 +119,23 @@ let	convertFloat = (reg1, reg2) => {
 	const floatValue = dataView.getFloat32(0, false);
 	return floatValue
 }
-	
+
 let convertInt = (reg) => {
 	let value = reg & 255
-
-
+	// Protected against values which is not in the range (0-99).
+	// Protection against negative values is handled by masking with 255.
+	if (value > 99)
+		return 'Invalid value'
 	return value
 }
+
+// Using last 11 bits of the integer. That limit value to range 0-2047.
+let convertLimitedInt = (reg) => {
+	let value = reg & 2047
+	return value
+}
+
+
 
 
 
