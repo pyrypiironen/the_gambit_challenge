@@ -44,34 +44,34 @@ let buildArray = (response) => {
 // Build the response for later use.
 let	buildResponse = (dataArray) => {
 	const responseObject = {
-		// Date
-		'Flowrate' : 99999999,
-		'Energy Flow Rate' : 99999999,
-		'Velocity' : 99999999,
-		'Fluit sound speed' : 99999999,
+		'Time stamp' : dataArray[0],
+		'Flowrate' : convertFloat(dataArray[1], dataArray[2]) + ' m3/h',
+		'Energy Flow Rate' : convertFloat(dataArray[3], dataArray[4]) + ' GJ/h',
+		'Velocity' : convertFloat(dataArray[5], dataArray[6]) + ' m/s',
+		'Fluit sound speed' : convertFloat(dataArray[7], dataArray[8]) + ' m/s',
 		'Positive accumulator' : convertLong(dataArray[9], dataArray[10]),
-		'Positive decimal fractation' : 99999999,
+		'Positive decimal fractation' : convertFloat(dataArray[11], dataArray[12]),
 		'Negative accumulator' : convertLong(dataArray[13], dataArray[14]),
-		'Negative decimal fractation' : 99999999,
+		'Negative decimal fractation' : convertFloat(dataArray[15], dataArray[16]),
 		'Positive energy accumulator' : convertLong(dataArray[17], dataArray[18]),
-		'Positive energy decimal fractation' : 99999999,
+		'Positive energy decimal fractation' : convertFloat(dataArray[19], dataArray[20]),
 		'Negative energy accumulator' : convertLong(dataArray[21], dataArray[22]),
-		'Negative energy decimal fractation' : 99999999,
+		'Negative energy decimal fractation' : convertFloat(dataArray[23], dataArray[24]),
 		'Net accumulator' : convertLong(dataArray[25], dataArray[26]),
-		'Net decimal fractation' : 99999999,
+		'Net decimal fractation' : convertFloat(dataArray[27], dataArray[28]),
 		'Net energy accumulator' : convertLong(dataArray[29], dataArray[30]),
-		'Net energy decimal fractation' : 99999999,
-		// Float. Should be 7.101173400878906 in 2017 data.
+		'Net energy decimal fractation' : convertFloat(dataArray[31], dataArray[32]),
 		'Temperature #1/inlet' : convertFloat(dataArray[33], dataArray[34]) + ' C',
-
-		'Temperature #2/inlet' : 99999999,
-		'Analog input AI3' : 99999999,
-		'Analog input AI4' : 99999999,
-		'Analog input AI5' : 99999999,
-		'Current input at AI3' : 99999999,
-		// Duplicates may result unexpected behavior.
-		//'Current input at AI3' : 99999999,
-		//'Current input at AI3' : 99999999,
+		'Temperature #2/inlet' : convertFloat(dataArray[35], dataArray[36]) + ' C',
+		'Analog input AI3' : convertFloat(dataArray[37], dataArray[38]),
+		'Analog input AI4' : convertFloat(dataArray[39], dataArray[40]),
+		'Analog input AI5' : convertFloat(dataArray[41], dataArray[42]),
+		// Duplicates may result unexpected behavior --> added (a) to (c) to make difference.
+		'Current input at AI3 (a)' : convertFloat(dataArray[43], dataArray[44]) + ' mA',
+		'Current input at AI3 (b)' : convertFloat(dataArray[45], dataArray[46]) + ' mA',
+		'Current input at AI3 (c)' : convertFloat(dataArray[47], dataArray[48]) + ' mA',
+		//All good so far
+		
 		'System password' : 99999999,
 		'Password for hardware' : 99999999,
 		'Calendar (date and time)' : 99999999,
@@ -82,21 +82,23 @@ let	buildResponse = (dataArray) => {
 		'Times for beeper' : 99999999,
 		'Pulse left for OCT' : 99999999,
 		'Error code' : 99999999,
-		'PT100 resistance of inlet' : 99999999,
-		'PT100 resistanve of outlet' : 99999999,
-		'Total travel time' : 99999999,
-		'Delta travel time' : 99999999,
-		'Upstream travel time' : 99999999,
-		'Downstream travel time' : 99999999,
-		'Output current' : 99999999,
+
+		'PT100 resistance of inlet' : convertFloat(dataArray[77], dataArray[78]) + ' Ohm',
+		'PT100 resistanve of outlet' : convertFloat(dataArray[79], dataArray[80]) + ' Ohm',
+		'Total travel time' : convertFloat(dataArray[81], dataArray[82]) + ' µs',
+		'Delta travel time' : convertFloat(dataArray[83], dataArray[84]) + ' ns',
+		'Upstream travel time' : convertFloat(dataArray[85], dataArray[86]) + ' µs',
+		'Downstream travel time' : convertFloat(dataArray[87], dataArray[88]) + ' µs',
+		'Output current' : convertFloat(dataArray[89], dataArray[90]) + ' mA',
+
 		'Working step' : 99999999,
 		'Signal Quality' : 99999999,
 		'Upstream strength' : 99999999,
 		'Downstream strength' : 99999999,
 		'Language used in user interface' : 99999999,
-		'The rate of the measurement travel time by the calculated travel time' : 99999999,
-		'Reynolds number' : 99999999,
-		'**** Data array***' : dataArray
+
+		'The rate of the measurement travel time by the calculated travel time' : convertFloat(dataArray[97], dataArray[98]),
+		'Reynolds number' : convertFloat(dataArray[99], dataArray[100]),
 	}
 	return responseObject
 }
