@@ -70,9 +70,6 @@ let	buildResponse = (dataArray) => {
 		'Current input at AI3 (a)' : convertFloat(dataArray[43], dataArray[44]) + ' mA',
 		'Current input at AI3 (b)' : convertFloat(dataArray[45], dataArray[46]) + ' mA',
 		'Current input at AI3 (c)' : convertFloat(dataArray[47], dataArray[48]) + ' mA',
-		//All good so far
-		
-		// BCD
 		'System password' : convertBCD_2(dataArray[49], dataArray[50]),
 		'Password for hardware' : convertBCD(dataArray[51]),
 		'Calendar (date and time)' : convertBCDcal(dataArray[53], dataArray[54], dataArray[55]),
@@ -84,9 +81,10 @@ let	buildResponse = (dataArray) => {
 		'LCD Back-lit lights for number of seconds' : 99999999,
 		'Times for beeper' : 99999999,
 		'Pulse left for OCT' : 99999999,
+		
+		
 		// No need to protection.
 		'Error code' : parseInt(dataArray[72]),
-
 		'PT100 resistance of inlet' : convertFloat(dataArray[77], dataArray[78]) + ' Ohm',
 		'PT100 resistanve of outlet' : convertFloat(dataArray[79], dataArray[80]) + ' Ohm',
 		'Total travel time' : convertFloat(dataArray[81], dataArray[82]) + ' µs',
@@ -96,22 +94,21 @@ let	buildResponse = (dataArray) => {
 		'Output current' : convertFloat(dataArray[89], dataArray[90]) + ' mA',
 
 		'Working step' : 99999999,
+		
 		'Signal Quality' : convertInt(dataArray[92]),
 		'Upstream strength' : convertLimitedInt(dataArray[93]),
 		'Downstream strength' : convertLimitedInt(dataArray[94]),
 		// Not protected to keep possible add languages.
 		'Language used in user interface' : parseInt(dataArray[96]),
-
 		'The rate of the measurement travel time by the calculated travel time' : convertFloat(dataArray[97], dataArray[98]),
 		'Reynolds number' : convertFloat(dataArray[99], dataArray[100]),
 	}
 	return responseObject
 }
 
-// Combine two 16-bit values into a single 32-bit value.
+// Combine two 16-bit values into a single 32-bit value. Swap.
 let	convertLong = (reg1, reg2) => {
-	let value = (reg2 << 16) | reg1;
-	return value
+	return (reg2 << 16) | reg1
 }
 
 let	convertFloat = (reg1, reg2) => {
@@ -136,8 +133,7 @@ let convertInt = (reg) => {
 
 // Using last 11 bits of the integer. That limit value to range 0-2047.
 let convertLimitedInt = (reg) => {
-	let value = reg & 2047
-	return value
+	return reg & 2047
 }
 
 
@@ -178,24 +174,26 @@ let convertBCDcal = (reg1, reg2, reg3) => {
 	let value10 = (reg1 & 3840) >> 8;
 	let value11 = (reg1 & 240) >> 4;
 	let value12 = (reg1 & 15);
-	const calendar =	String(value1) +
+	const calendar =	'20' +
+						String(value1) +
 						String(value2) +
-						's' +
+						'-' +
 						String(value3) +
 						String(value4) +
-						'm' +
+						'-' +
 						String(value5) +
 						String(value6) +
-						'h' +
+						' ' +
 						String(value7) +
 						String(value8) +
-						'd' +
+						':' +
 						String(value9) +
 						String(value10) +
-						'm' +
+						':' +
 						String(value11) +
-						String(value12) +
-						'y';
+						String(value12);
+	
+	
 	return calendar
 }
 
