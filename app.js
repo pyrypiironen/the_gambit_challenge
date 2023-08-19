@@ -6,7 +6,7 @@ const axios = require('axios');
 // Setting up the port. Local port 3000 for now.
 const PORT = process.env.PORT || 3000;
 
-//The application
+// The application
 app.get('/', async (req, res) => {
 	try {
 		const response = await axios.get('http://tuftuf.gambitlabs.fi/feed.txt')
@@ -27,13 +27,10 @@ app.get('/', async (req, res) => {
 	}
 });
 
-// Build the data array for later use.
 let buildArray = (response) => {
 	const lines = response.data.split("\n");
 	const dataArray = [];
-	 	// Index 0 for the date
 		dataArray[0] = lines[0];
-		// Save the value to index given before that.
 		for (let i = 1; i < lines.length; i++) {
 			const parts = lines[i].split(':')
 			dataArray[parts[0]] = parts[1];
@@ -41,7 +38,6 @@ let buildArray = (response) => {
 		return dataArray
 	}
 
-// Build the response for later use.
 let	buildResponse = (dataArray) => {
 	const responseObject = {
 		'Time stamp' : dataArray[0],
@@ -66,7 +62,6 @@ let	buildResponse = (dataArray) => {
 		'Analog input AI3' : convertFloat(dataArray[37], dataArray[38]),
 		'Analog input AI4' : convertFloat(dataArray[39], dataArray[40]),
 		'Analog input AI5' : convertFloat(dataArray[41], dataArray[42]),
-		// Duplicates may result unexpected behavior --> added (a) to (c) to make difference.
 		'Current input at AI3 (a)' : convertFloat(dataArray[43], dataArray[44]) + ' mA',
 		'Current input at AI3 (b)' : convertFloat(dataArray[45], dataArray[46]) + ' mA',
 		'Current input at AI3 (c)' : convertFloat(dataArray[47], dataArray[48]) + ' mA',
@@ -74,16 +69,14 @@ let	buildResponse = (dataArray) => {
 		'Password for hardware' : convertBCD(dataArray[51]),
 		'Calendar (date and time)' : convertBCDcal(dataArray[53], dataArray[54], dataArray[55]),
 		'Day+Hour for Auto-Save' : convertBCD(dataArray[56]) + 'H',
-		
-		
-		'Key to input' : 99999999,
-		'Go to Window' : 99999999,
-		'LCD Back-lit lights for number of seconds' : 99999999,
-		'Times for beeper' : 99999999,
-		'Pulse left for OCT' : 99999999,
-		
-		
+		'Key to input' : dataArray[59],
+		'Go to Window' : dataArray[60],
+		'LCD Back-lit lights for number of seconds' : dataArray[61] + ' s',
+		'Times for beeper' : convertLimitedInt(dataArray[62], 255),
+		'Pulse left for OCT' : convertLimitedInt(dataArray[62], 65535),
+
 		'Error code' : parseInt(dataArray[72]),
+
 		'PT100 resistance of inlet' : convertFloat(dataArray[77], dataArray[78]) + ' Ohm',
 		'PT100 resistanve of outlet' : convertFloat(dataArray[79], dataArray[80]) + ' Ohm',
 		'Total travel time' : convertFloat(dataArray[81], dataArray[82]) + ' µs',
@@ -91,13 +84,10 @@ let	buildResponse = (dataArray) => {
 		'Upstream travel time' : convertFloat(dataArray[85], dataArray[86]) + ' µs',
 		'Downstream travel time' : convertFloat(dataArray[87], dataArray[88]) + ' µs',
 		'Output current' : convertFloat(dataArray[89], dataArray[90]) + ' mA',
-
-		'Working step' : 99999999,
-		
-		'Signal Quality' : convertInt(dataArray[92]),
-		'Upstream strength' : convertLimitedInt(dataArray[93]),
-		'Downstream strength' : convertLimitedInt(dataArray[94]),
-		// Not protected to keep possible add languages.
+		'Working step' : convertInt99(dataArray[92], 1),
+		'Signal Quality' : convertInt99(dataArray[92], 2),
+		'Upstream strength' : convertLimitedInt(dataArray[93], 2047),
+		'Downstream strength' : convertLimitedInt(dataArray[94], 2047),
 		'Language used in user interface' : setLanguage(dataArray[96]),
 		'The rate of the measurement travel time by the calculated travel time' : convertFloat(dataArray[97], dataArray[98]),
 		'Reynolds number' : convertFloat(dataArray[99], dataArray[100]),
@@ -118,18 +108,30 @@ let	convertFloat = (reg1, reg2) => {
 	return floatValue
 }
 
-let convertInt = (reg) => {
-	let value = reg & 255
-	// Protected against values which is not in the range (0-99).
-	// Protection against negative values is handled by masking with 255.
-	if (value > 99)
+// Integers
+// OK 1. Writable (59,60, 61 in unit second) --> Writable without conversion
+// OK 2. Max. 255 (62) --> 8 bits --> convertLimitedInt 
+// OK 3. Max 65535 (62) --> 16 bits --> convertLimitedInt
+// OK 4. Range 0-99 (92) --> not exact amount of bits -> two values in one bit --> protection against invalid value --> convertInt99
+// OK 5. Range 0-2047 (93,94) --> 11 bits -->convertLimitedInt
+// HOX reg 62 !!!
+
+
+let convertInt99 = (reg, byte) => {
+	if (byte == 1)
+		reg = (reg & 65280) >> 8
+	else if (byte == 2)
+		reg = reg & 255
+	else
+		return 'Invalid use of convertInt99.'
+	if (reg > 99)
 		return 'Invalid value. Value is out of range (0-99).'
-	return value
+	return reg
 }
 
-// Using last 11 bits of the integer. That limit value to range 0-2047.
-let convertLimitedInt = (reg) => {
-	return reg & 2047
+// 
+let convertLimitedInt = (reg, limit) => {
+	return reg & limit
 }
 
 
