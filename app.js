@@ -1,4 +1,3 @@
-// Importing modules
 const express = require('express');
 const app = express();
 const axios = require('axios');
@@ -6,18 +5,10 @@ const axios = require('axios');
 // Setting up the port. Local port 3000 for now.
 const PORT = process.env.PORT || 3000;
 
-// The application
 app.get('/', async (req, res) => {
 	try {
 		const response = await axios.get('http://tuftuf.gambitlabs.fi/feed.txt')
 		dataArray = buildArray(response);
-		// Just for testing program with 2017 data
-		dataArray[21] = 65480;
-		dataArray[22] = 65535;
-		dataArray[33] = 15568;
-		dataArray[34] = 16611;
-		dataArray[92] = 806;
-		// Testing part ends
 		responseObject = buildResponse(dataArray)
 		res.status(200).json(responseObject)
 	} catch(error) {
@@ -74,9 +65,7 @@ let	buildResponse = (dataArray) => {
 		'LCD Back-lit lights for number of seconds' : dataArray[61] + ' s',
 		'Times for beeper' : convertLimitedInt(dataArray[62], 255),
 		'Pulse left for OCT' : convertLimitedInt(dataArray[62], 65535),
-
 		'Error code' : parseInt(dataArray[72]),
-
 		'PT100 resistance of inlet' : convertFloat(dataArray[77], dataArray[78]) + ' Ohm',
 		'PT100 resistanve of outlet' : convertFloat(dataArray[79], dataArray[80]) + ' Ohm',
 		'Total travel time' : convertFloat(dataArray[81], dataArray[82]) + ' µs',
@@ -108,15 +97,6 @@ let	convertFloat = (reg1, reg2) => {
 	return floatValue
 }
 
-// Integers
-// OK 1. Writable (59,60, 61 in unit second) --> Writable without conversion
-// OK 2. Max. 255 (62) --> 8 bits --> convertLimitedInt 
-// OK 3. Max 65535 (62) --> 16 bits --> convertLimitedInt
-// OK 4. Range 0-99 (92) --> not exact amount of bits -> two values in one bit --> protection against invalid value --> convertInt99
-// OK 5. Range 0-2047 (93,94) --> 11 bits -->convertLimitedInt
-// HOX reg 62 !!!
-
-
 let convertInt99 = (reg, byte) => {
 	if (byte == 1)
 		reg = (reg & 65280) >> 8
@@ -129,12 +109,9 @@ let convertInt99 = (reg, byte) => {
 	return reg
 }
 
-// 
 let convertLimitedInt = (reg, limit) => {
 	return reg & limit
 }
-
-
 
 let convertBCD = (reg) => {
 	let value1 = (reg & 61440) >> 12;
@@ -206,28 +183,3 @@ app.listen(PORT, () => {
 });
 
 
-
-
-// Bit conversions:
-
-// LONG 32 bits (this should be -56)
-// Decimal to binary (65480 and 65535)
-// First reg					1111 1111 1100 1000 (2017 text file)
-// Second reg					1111 1111 1111 1111
-// Combined (2nd + 1st)			1111 1111 1111 1111 1111 1111 1100 1000 (2017 text file)
-// convertLong for now			1111 1111 1111 1111 1111 1011 1011 0000 (2018 text file)
-//	-->							-56 (decimal from signed 2's complement)
-
-// REAL4 (this should be 7.101173400878906)
-// Decimal to binary (15568 and 16611)
-// First reg					0011 1100 1101 0000
-// Second reg					0100 0000 1110 0011
-// Combined (2nd + 1st)			0100 0000 1110 0011 0011 1100 1101 0000
-// -->							7.101173400878906 (float)
-
-// INTEGER 16 bits (this should be 38)
-// Decimal to binary (806)
-// First reg					0000 0011 0010 0110
-// First byte					0000 0011
-// Second byte					0010 0110
-// Second byte					38 (for Signal quality)
