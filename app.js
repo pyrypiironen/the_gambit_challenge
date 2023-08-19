@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const axios = require('axios');
 
-// Setting up the port. Local port 3000 for now.
-const PORT = process.env.PORT || 3000;
+// Setting up the port. Local port 3000 for now. --> 8080 to cloud service.
+const PORT = process.env.PORT || 8080;
 
 app.get('/', async (req, res) => {
 	try {
@@ -179,7 +179,7 @@ let setLanguage = (reg) => {
 
 
 app.listen(PORT, () => {
-  console.log('Server is running on port 3000');
+  console.log('Server is running on port 8080');
 });
 
 
