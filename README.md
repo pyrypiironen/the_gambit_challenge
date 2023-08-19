@@ -102,8 +102,8 @@ I start by dividing them into five different types, which can be seen in the tab
 | Type | Regs | Function | Limit by bits (bitmask) | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | Writable | 59, 60, 61 | - | - | |
-| Max. 255 | 62 | convertLimitedInt | 8-bits | Two values in same bytes. |
-| Max. 65 535 | 62 | convertLimitedInt | 16-bits | Two values in same bytes. |
+| Max. 255 | 62 | convertLimitedInt | 8-bits | Two values in the same bytes. |
+| Max. 65 535 | 62 | convertLimitedInt | 16-bits | Two values in the same bytes. |
 | Range 0-99 | 92 | convertInt99 | No exact amount of bits. | Two values in one reg, but different bytes. |
 | Range 0-2047 | 93, 94 | convertLimitedInt | 11-bits | |
 
@@ -111,8 +111,8 @@ I start by dividing them into five different types, which can be seen in the tab
 - For `Max. 255`, `Max. 65 535`, and `Range 0-2047` I used as many bits on the right as needed to reach the maximum.
   - This was possible because every value can be used as a bitmask.
     - For example 255 = `0000 0000 1111 1111`.
-  - `convertLimitedInt` takes the register value and maximum as parameters so all of these types of integers can be handled by the same function. 
-- For `Range 0-99` I created the function `convertInt99` which also takes byte as a parameter.
+  - `convertLimitedInt` takes the register value and the maximum value of range (limit) as parameters so all of these types of integers can be handled by the same function. 
+- For `Range 0-99` I created the function `convertInt99` which also takes a significant byte as a parameter.
   - 1 is for the first byte (first 8 bits)
   - 2 is for the second byte (last 8 bits).
   - The function uses either the first or the second byte and checks that the value is on the range.
