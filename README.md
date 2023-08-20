@@ -7,6 +7,15 @@ Check the more detailed information from the link above.
 
 I hosted my solution on Heroku. You can send a GET request to https://gambit-app-5bbb7a86fcb0.herokuapp.com/ to get my solution in JSON format. The website does not have an actual user interface.
 
+## My comments about the project
+
+- This was the first time I used Javascript, which may appear non-standard ways to use the code.
+- The project took about 25 hours for me.
+- The hardest parts were understanding how to build a working frame of the program using Javascript and how to deal with the register values.
+  - Bitwise operations itself wasn’t hard for me after using them with [Corewar](https://github.com/pyrypiironen/Corewar)
+- After initial confusion when the first time opened TUF 2000M user manual,  I really like this project and feel that I learned something new during it.
+
+
 
 ## The Application
 
