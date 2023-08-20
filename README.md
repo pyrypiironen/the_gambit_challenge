@@ -5,6 +5,8 @@ This is my solution to [Gambit Challenge](https://github.com/gambit-labs/challen
 I chose option 1 to create an REST API that parses the data from [live text feed](http://tuftuf.gambitlabs.fi/feed.txt) to a readable form.
 Check the more detailed information from the link above.
 
+I hosted my solution on Heroku. You can send a GET request to https://gambit-app-5bbb7a86fcb0.herokuapp.com/ to get my solution in JSON format. The website does not have an actual user interface.
+
 
 ## The Application
 
