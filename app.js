@@ -16,18 +16,18 @@ app.get('/', async (req, res) => {
 			error: 'Error fetching data'
 		})
 	}
-});
+})
 
 let buildArray = (response) => {
 	const lines = response.data.split("\n");
 	const dataArray = [];
-		dataArray[0] = lines[0];
-		for (let i = 1; i < lines.length; i++) {
-			const parts = lines[i].split(':')
-			dataArray[parts[0]] = parts[1];
-		}
-		return dataArray
+	dataArray[0] = lines[0];
+	for (let i = 1; i < lines.length; i++) {
+		const parts = lines[i].split(':')
+		dataArray[parts[0]] = parts[1];
 	}
+	return dataArray
+}
 
 let	buildResponse = (dataArray) => {
 	const responseObject = {
@@ -173,4 +173,4 @@ let setLanguage = (reg) => {
 
 app.listen(PORT, IP_ADDRESS, () => {
   console.log('Server is running on port 8080');
-});
+})
